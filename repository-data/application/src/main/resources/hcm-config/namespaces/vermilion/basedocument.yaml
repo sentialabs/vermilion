@@ -3,9 +3,11 @@ definitions:
     /hippo:namespaces/vermilion/basedocument:
       jcr:primaryType: hipposysedit:templatetype
       jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: a4dbab81-d8f7-4d1b-9145-f9fb3056c84e
       /hipposysedit:nodetype:
         jcr:primaryType: hippo:handle
         jcr:mixinTypes: ['mix:referenceable']
+        jcr:uuid: 14ee4e41-0f1a-46a2-82a4-34f00ea7b153
         /hipposysedit:nodetype:
           jcr:primaryType: hipposysedit:nodetype
           jcr:mixinTypes: ['hipposysedit:remodel']

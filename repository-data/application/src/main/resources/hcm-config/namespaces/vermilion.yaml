@@ -3,3 +3,4 @@ definitions:
     /hippo:namespaces/vermilion:
       jcr:primaryType: hipposysedit:namespace
       jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: 4d04dbbe-01ee-4062-9b8d-75f754ec8430

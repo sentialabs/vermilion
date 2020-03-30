@@ -1,0 +1,32 @@
+definitions:
+  config:
+    /hippo:configuration/hippo:translations/hippo:types/vermilion:contentdocument:
+      jcr:primaryType: hipposys:resourcebundles
+      /en:
+        jcr:primaryType: hipposys:resourcebundle
+        jcr:name: Simple Document
+        vermilion:content: Content
+        vermilion:introduction: Introduction
+        vermilion:publicationdate: Publication date
+        vermilion:title: Title
+      /nl:
+        jcr:primaryType: hipposys:resourcebundle
+        jcr:name: Eenvoudig Document
+        vermilion:content: Inhoud
+        vermilion:introduction: Introductie
+        vermilion:publicationdate: Publicatiedatum
+        vermilion:title: Titel
+      /fr:
+        jcr:primaryType: hipposys:resourcebundle
+        jcr:name: Document simple
+        vermilion:content: Contenu
+        vermilion:introduction: Introduction
+        vermilion:publicationdate: Date de publication
+        vermilion:title: Titre
+      /de:
+        jcr:primaryType: hipposys:resourcebundle
+        jcr:name: Einfaches Dokument
+        vermilion:content: Inhalt
+        vermilion:introduction: Einführung
+        vermilion:publicationdate: Publikationsdatum
+        vermilion:title: Titel
