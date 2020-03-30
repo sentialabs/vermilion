@@ -1,0 +1,6 @@
+definitions:
+  config:
+    /hst:hst/hst:configurations/vermilion/hst:catalog:
+      jcr:primaryType: hst:catalog
+      /vermilion-catalog:
+        jcr:primaryType: hst:containeritempackage

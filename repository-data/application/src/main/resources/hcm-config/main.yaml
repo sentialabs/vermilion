@@ -1,0 +1,5 @@
+definitions:
+  namespace:
+    vermilion:
+      uri: http://www.vermilion.com/vermilion/nt/1.0
+      cnd: namespaces/vermilion.cnd

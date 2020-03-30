@@ -1,0 +1,6 @@
+site: vermilion
+group: vermilion
+project: vermilion
+module:
+  name: vermilion-repository-data-site-development
+  after: vermilion-repository-data-site

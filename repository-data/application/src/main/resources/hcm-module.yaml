@@ -1,0 +1,6 @@
+group:
+  name: vermilion
+  after: hippo-cms
+project: vermilion
+module:
+  name: vermilion-repository-data-application

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<project>
+  <projectNamespace>vermilion</projectNamespace>
+  <confirmParams>false</confirmParams>
+  <selectedProjectPackage>nl.dimario</selectedProjectPackage>
+  <selectedBeansPackage>nl.dimario.beans</selectedBeansPackage>
+  <selectedComponentsPackage>nl.dimario.components</selectedComponentsPackage>
+  <selectedRestPackage>nl.dimario.rest</selectedRestPackage>
+  <hstRoot>/hst:vermilion</hstRoot>
+  <webfileBundleName>site</webfileBundleName>
+  <setupDone>false</setupDone>
+  <useSamples>true</useSamples>
+  <extraTemplates>true</extraTemplates>
+</project>
