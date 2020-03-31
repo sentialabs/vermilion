@@ -177,6 +177,7 @@
         </property>
       </activation>
       <modules>
+        <module>calc</module>
         <module>cms-dependencies</module>
         <module>repository-data</module>
         <module>cms</module>
