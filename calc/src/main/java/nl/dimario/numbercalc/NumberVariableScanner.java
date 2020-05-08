@@ -4,16 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This implements phase 1 of the Number Calculation evaparser.
- * The main parser program walks the parsed input text and calls the callbacks in
- * this source file whenever it encounters a variable name.
+ * This implements phase 1 of the Number Calculation evalparser.
+ * In phase 1, the main parser program walks the parsed input text and
+ * calls the callbacks in this source file whenever it encounters
+ * a variable name.
  *
- * The variables are collected by name in a Map and are available via a getter
+ * The variables are collected by name in a Map
  */
 
 public class NumberVariableScanner extends NumberParserBaseListener {
 
-    private Map<String, NumberVariable> variables;
+    private Map<String, Number> variables;
 
     public NumberVariableScanner() {
         this.variables  = new HashMap<>();
@@ -25,7 +26,7 @@ public class NumberVariableScanner extends NumberParserBaseListener {
         // so that we can report relevant information in case of missing values.
         String name = ctx.IDENTIFIER().getText();
         if( ! variables.containsKey( name)) {
-            NumberVariable variable = new NumberVariable(name);
+            Number variable = Integer.valueOf(0);
             variables.put(name, variable);
         }
     }

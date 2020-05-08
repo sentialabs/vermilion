@@ -1,1 +1,4 @@
 bla bla ${n foo.bar + 3 } bla bla
+and here is some more ${n mario * 4 } and ${n lorum.ipsum - solo.ipsum } hits the dentacle.
+
+How about some floating point ? ${n mario /  0.5 }
