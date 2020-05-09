@@ -33,16 +33,9 @@ public class NumberRenderer extends NumberParserBaseVisitor<Number> {
 
     @Override
     public Number visitResult(NumberParser.ResultContext ctx) {
-        try {
-            Number value = visit(ctx.expression());
-            output.append(value.toString());
-            return value;
-        } catch(  Exception x) {
-            output.append( "*** ERROR ");
-            output.append( x.getMessage());
-            output.append( " ***");
-            return null;
-        }
+        Number value = visit(ctx.expression());
+        output.append(value.toString());
+        return value;
     }
 
     @Override

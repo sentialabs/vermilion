@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NumberRendererTest {
 
-    private Map<String,Number> context;
+    private Map<String, Number> context;
 
     @BeforeEach
     public void setup() {
@@ -21,15 +22,76 @@ public class NumberRendererTest {
     }
 
     @Test
-    public void testConstants() {
+    public void testGoodConstants() {
 
         ParseTree tree = TestUtils.parseString("${n3.21}");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
-        assertEquals( 3.21D, number);
+        assertEquals(3.21D, number);
 
         tree = TestUtils.parseString("${n321}");
         number = renderer.visit(tree);
-        assertEquals( 321L, number);
+        assertEquals(321L, number);
     }
+
+    @Test
+    public void testBadConstant() {
+
+        ParseTree tree;
+        try {
+            tree = TestUtils.parseString("${n3x.21}");
+            assertTrue(false);
+        } catch (Exception x) {
+            assert( x.getMessage().contains("mismatched input 'x'"));
+        }
+    }
+
+    @Test
+    public void testGoodIdentifiers() {
+        context.put("foo.bar", 1.23);
+        ParseTree tree = TestUtils.parseString("${nfoo.bar}");
+        NumberRenderer renderer = new NumberRenderer(context);
+        Number number = renderer.visit(tree);
+        assertEquals(1.23D, number);
+
+        context.put("foobar", 123);
+        tree = TestUtils.parseString("${nfoobar}");
+        number = renderer.visit(tree);
+        assertEquals(123, number);
+
+        context.put("foo_bar", 4.56);
+        tree = TestUtils.parseString("${nfoo_bar}");
+        number = renderer.visit(tree);
+        assertEquals(4.56, number);
+
+        context.put("_foo._bar", 789);
+        tree = TestUtils.parseString("${n_foo._bar}");
+        number = renderer.visit(tree);
+        assertEquals(789, number);
+
+        context.put("_3foo._2bar", 7.89);
+        tree = TestUtils.parseString("${n_3foo._2bar}");
+        number = renderer.visit(tree);
+        assertEquals(7.89, number);
+    }
+
+    @Test
+    public void testBadIdentifiers() {
+
+        ParseTree tree;
+        try {
+            tree = TestUtils.parseString("${n.foo.bar}");
+            assertTrue(false);
+        } catch (Exception x) {
+            assert( x.getMessage().contains("mismatched input '.foo'"));
+        }
+        try {
+            tree = TestUtils.parseString("${n2foo}");
+            assertTrue(false);
+        } catch (Exception x) {
+            assert( x.getMessage().contains("extraneous input 'foo'"));
+        }
+    }
+
+
 }

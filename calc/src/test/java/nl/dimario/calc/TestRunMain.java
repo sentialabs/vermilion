@@ -6,8 +6,11 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,25 +18,22 @@ import java.util.Set;
 public class TestRunMain {
 
     public static void main( String[] args) throws IOException {
-        CharStream charStream = CharStreams.fromFileName( "src/test/resources/number.test");
-        NumberLexer lexer = new NumberLexer( charStream);
-        CommonTokenStream tokens = new CommonTokenStream( lexer);
-        NumberParser parser = new NumberParser( tokens);
-        ParseTree tree = parser.document();
-        // Phase 1: collect the variable names
-        NumberVariableScanner scanner  = new NumberVariableScanner();
-        ParseTreeWalker johnny = new ParseTreeWalker();
-        johnny.walk(scanner, tree);
-        // Phase 2: resolve the variable names to number values
-        Set<String> variables = scanner.getVariableNames();
-        Map<String, Number> context = new HashMap<>();
-        int ct = 2;
-        for( String name: variables) {
-            context.put(name, ct++);
+
+        String script = FileUtils.readFileToString(new File("src/test/resources/number.test"), StandardCharsets.UTF_8);
+        ScriptExpander scriptExpander = new ScriptExpander(script);
+
+        try {
+            scriptExpander.parse();
+            Set<String> variables = scriptExpander.getVariableNames();
+            Map<String, Number> context = new HashMap<>();
+            int ct = 2;
+            for (String name : variables) {
+                context.put(name, ct++);
+            }
+            String result = scriptExpander.render(context);
+            System.out.println(result);
+        } catch (Exception x) {
+            x.printStackTrace();
         }
-        // Phase 3: evaluate the expressions using the resolved number values.
-        NumberRenderer renderer = new NumberRenderer(context);
-        String result = renderer.render(tree);
-        System.out.println( result);
     }
 }
