@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class TestRunMain {
 
@@ -24,10 +25,10 @@ public class TestRunMain {
         ParseTreeWalker johnny = new ParseTreeWalker();
         johnny.walk(scanner, tree);
         // Phase 2: resolve the variable names to number values
-        Map<String, Number> variables = scanner.getVariables();
+        Set<String> variables = scanner.getVariableNames();
         Map<String, Number> context = new HashMap<>();
         int ct = 2;
-        for( String name: variables.keySet()) {
+        for( String name: variables) {
             context.put(name, ct++);
         }
         // Phase 3: evaluate the expressions using the resolved number values.

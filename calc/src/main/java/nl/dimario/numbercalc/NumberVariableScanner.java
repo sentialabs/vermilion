@@ -1,7 +1,9 @@
 package nl.dimario.numbercalc;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This implements phase 1 of the Number Calculation evalparser.
@@ -14,24 +16,19 @@ import java.util.Map;
 
 public class NumberVariableScanner extends NumberParserBaseListener {
 
-    private Map<String, Number> variables;
+    private Set<String> variableNames;
 
     public NumberVariableScanner() {
-        this.variables  = new HashMap<>();
+        this.variableNames = new HashSet<>();
     }
 
     @Override
     public void enterIdentifier(NumberParser.IdentifierContext ctx) {
-        // TODO we probably want to get something indicating the position in the source code
-        // so that we can report relevant information in case of missing values.
         String name = ctx.IDENTIFIER().getText();
-        if( ! variables.containsKey( name)) {
-            Number variable = Integer.valueOf(0);
-            variables.put(name, variable);
-        }
+        variableNames.add(name);
     }
 
-    public Map getVariables() {
-        return this.variables;
+    public Set getVariableNames() {
+        return this.variableNames;
     }
 }
