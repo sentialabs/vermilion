@@ -8,10 +8,12 @@ package nl.dimario.calc;
  * Due to the nature of floating point arithmatics, this does not
  * always hold true for randomly selected numbers. For instance you may expect
  * 6.02 - 3 to equal 3.02 when in fact the result calculated via
- * NumberRender is 3.0199999999999996
- * <p>
+ * NumberRender is 3.0199999999999996.
  * This is not an error in the NumberRender code but follows from the
  * imperfections inherent in floating point arithmatics.
+ * <p>
+ * This careful selection of the example calculations was done in order
+ * to not complicate the issue at hand by introducing real world concerns.
  */
 
 import nl.dimario.numbercalc.NumberRenderer;
