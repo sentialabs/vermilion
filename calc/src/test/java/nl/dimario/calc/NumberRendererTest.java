@@ -1,10 +1,14 @@
 package nl.dimario.calc;
 
 
+import nl.dimario.numbercalc.NumberParser;
 import nl.dimario.numbercalc.NumberRenderer;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +16,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 public class NumberRendererTest {
 
     private Map<String, Number> context;
+
+    @Mock private NumberParser.MultdivContext multdivContext;
 
     @BeforeEach
     public void setup() {
@@ -82,14 +89,46 @@ public class NumberRendererTest {
         try {
             tree = TestUtils.parseString("${n.foo.bar}");
             assertTrue(false);
-        } catch (Exception x) {
-            assert( x.getMessage().contains("mismatched input '.foo'"));
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("'.foo'"));
         }
         try {
             tree = TestUtils.parseString("${n2foo}");
             assertTrue(false);
-        } catch (Exception x) {
-            assert( x.getMessage().contains("extraneous input 'foo'"));
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("'foo'"));
+        }
+        try {
+            tree = TestUtils.parseString("${n#foo.bar}");
+            assertTrue(false);
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("'#'"));
+        }
+        try {
+            tree = TestUtils.parseString("${n$foo.bar}");
+            assertTrue(false);
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("'$'"));
+        }
+    }
+
+    @Test
+    public void testBraces() {
+        ParseTree tree = TestUtils.parseString("${n(33)}");
+        NumberRenderer renderer = new NumberRenderer(context);
+        Number number = renderer.visit(tree);
+        assertEquals(33L, number);
+        try {
+            tree = TestUtils.parseString("${n((44)}");
+            assertTrue(false);
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("')'"));
+        }
+        try {
+            tree = TestUtils.parseString("${n((44)))}");
+            assertTrue(false);
+        } catch (ParseCancellationException x) {
+            assert( x.getMessage().contains("')'"));
         }
     }
 

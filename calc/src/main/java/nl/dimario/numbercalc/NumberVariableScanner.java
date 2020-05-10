@@ -6,12 +6,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This implements phase 1 of the Number Calculation evalparser.
- * In phase 1, the main parser program walks the parsed input text and
- * calls the callbacks in this source file whenever it encounters
- * a variable name.
- *
- * The variables are collected by name in a Map
+ * This implements a scan to discover all identifiers in the script.
+ * The variable names are collected by name in a Set.
+ * Some other process or method must resolve Number values for each
+ * name. These values will then be used by the renderer to perform
+ * the actual calculations.
  */
 
 public class NumberVariableScanner extends NumberParserBaseListener {

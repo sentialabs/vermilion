@@ -1,5 +1,10 @@
 package nl.dimario.numbercalc;
 
+/**
+ * The ScriptExpander ties together the other components
+ * for interpreting and evaluating embedded scripting.
+ */
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -16,10 +21,23 @@ public class ScriptExpander {
     private String script;
     private Set<String> variableNames;
 
+    /**
+     * The constructor takes the source code (HTML with embedded
+     * scripting)
+     * @param script the source code that must be evaluated.
+     */
     public ScriptExpander(String script) {
         this.script = script;
     }
 
+    /**
+     * parse the source into a tree of expression elements,
+     * then fill up the set with variable names found in the embedded
+     * scripting.
+     *
+     * @throws ParseCancellationException
+     *      when syntax errors are encountered.
+     */
     public void parse() throws ParseCancellationException {
         CharStream charStream = CharStreams.fromString(this.script);
         NumberLexer lexer = new NumberLexer(charStream);
@@ -33,10 +51,17 @@ public class ScriptExpander {
         this.scanVariables();
     }
 
+    /**
+     * Walk the parsed expression tree and make a note of the value
+     * of each unique identifier we encounter. These are the names
+     * of variables that are used in the  embedded script. The names of the
+     * values must be resolved to Number values. This is the responsibility
+     * of the caller that wants the scripting to be evaluated.
+     */
     private void scanVariables() {
         NumberVariableScanner scanner  = new NumberVariableScanner();
         ParseTreeWalker johnny = new ParseTreeWalker();
-        johnny.walk(scanner, tree);
+        johnny.walk(scanner, this.tree);
         this.variableNames = scanner.getVariableNames();
     }
 
@@ -44,6 +69,17 @@ public class ScriptExpander {
         return this.variableNames;
     }
 
+    /**
+     * render() takes a Map that holds the names of all variables used in the
+     * script together with a Number value for that identifier. This map
+     * is used by the rendering code to resolve names to values.
+     *
+     * @param variables a Map containing all identifiers found by scanVariables()
+     *                  together with their value. It is the responseblity of the
+     *                  caller to find values for the names, here we just use them.
+     * @return          A string containing unaltered HTML mixed with the rendered
+     *                  calculations.
+     */
     public String render( Map<String,Number> variables) {
         NumberRenderer renderer = new NumberRenderer(variables);
         return renderer.render(tree);
