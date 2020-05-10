@@ -18,28 +18,20 @@ import java.util.Set;
 public class ScriptExpander {
 
     private ParseTree tree;
-    private String script;
     private Set<String> variableNames;
 
     /**
-     * The constructor takes the source code (HTML with embedded
-     * scripting)
-     * @param script the source code that must be evaluated.
-     */
-    public ScriptExpander(String script) {
-        this.script = script;
-    }
-
-    /**
-     * parse the source into a tree of expression elements,
+     * parse the source script into a tree of expression elements,
      * then fill up the set with variable names found in the embedded
      * scripting.
      *
+     * @param script the source code that must be evaluated.
+     * @returns the ParseTree resulting from the parse.
      * @throws ParseCancellationException
      *      when syntax errors are encountered.
      */
-    public void parse() throws ParseCancellationException {
-        CharStream charStream = CharStreams.fromString(this.script);
+    public ParseTree parse(String script) throws ParseCancellationException {
+        CharStream charStream = CharStreams.fromString(script);
         NumberLexer lexer = new NumberLexer(charStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(CustomErrorListener.INSTANCE);
@@ -49,6 +41,7 @@ public class ScriptExpander {
         parser.addErrorListener(CustomErrorListener.INSTANCE);
         this.tree = parser.document();
         this.scanVariables();
+        return tree;
     }
 
     /**

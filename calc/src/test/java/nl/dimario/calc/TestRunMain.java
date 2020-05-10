@@ -20,10 +20,10 @@ public class TestRunMain {
     public static void main( String[] args) throws IOException {
 
         String script = FileUtils.readFileToString(new File("src/test/resources/number.test"), StandardCharsets.UTF_8);
-        ScriptExpander scriptExpander = new ScriptExpander(script);
+        ScriptExpander scriptExpander = new ScriptExpander();
 
         try {
-            scriptExpander.parse();
+            scriptExpander.parse(script);
             Set<String> variables = scriptExpander.getVariableNames();
             Map<String, Number> context = new HashMap<>();
             int ct = 2;
