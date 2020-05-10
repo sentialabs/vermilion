@@ -4,3 +4,9 @@ definitions:
       jcr:primaryType: hst:catalog
       /vermilion-catalog:
         jcr:primaryType: hst:containeritempackage
+        /scripting-component:
+          jcr:primaryType: hst:containeritemcomponent
+          hst:componentclassname: nl.dimario.component.ScriptingComponent
+          hst:label: Scripting Component
+          hst:template: scripting-component.ftl
+          hst:xtype: hst.item

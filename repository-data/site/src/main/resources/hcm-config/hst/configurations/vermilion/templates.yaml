@@ -20,3 +20,6 @@ definitions:
       /contentlist-main-contentlist:
         jcr:primaryType: hst:template
         hst:renderpath: webfile:/freemarker/hstdefault/contentlist-main-contentlist.ftl
+      /scripting-component.ftl:
+        jcr:primaryType: hst:template
+        hst:renderpath: webfile:/freemarker/vermilion/scripting-component.ftl
