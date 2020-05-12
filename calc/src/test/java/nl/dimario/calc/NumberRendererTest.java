@@ -42,9 +42,14 @@ public class NumberRendererTest {
     }
 
     private static final String STATIC_TEXT = "This is just static text";
-    private static final String STATIC_WITH_BRACKET = "This is static text with a [ bracket";
-    private static final String STATIC_WITH_EXPRESSION = "This is static text with an expression [* bracket ]";
-    private static final String STATIC_WITH_EXPRESSION_RESULT = "This is static text with an expression 10";
+    private static final String STATIC_WITH_DOLAR = "This is static text with a $ dolar";
+    private static final String STATIC_WITH_DOLAR_BRACE = "This is static text with a ${ dolar } and curly";
+    private static final String STATIC_WITH_DOLAR_SPACE_BRACE_STAR = "This is static text with a $ {* dolar } and curly and some space";
+    private static final String STATIC_WITH_DOLAR_BRACE_SPACE_STAR = "This is static text with a ${ * dolar } and curly and some space";
+    private static final String STATIC_WITH_EXPRESSION_SPACE = "This is static text with an expression ${* value }";
+    private static final String STATIC_WITH_EXPRESSION_SPACE_RESULT = "This is static text with an expression 10";
+    private static final String STATIC_WITH_EXPRESSION_NO_SPACE = "This is static text with an expression ${*value} and some more";
+    private static final String STATIC_WITH_EXPRESSION_NO_SPACE_RESULT = "This is static text with an expression 10 and some more";
 
     @Test
     public void testIslandGrammar() {
@@ -52,25 +57,42 @@ public class NumberRendererTest {
         String actual = scriptExpander.render(context);
         assertEquals( STATIC_TEXT, actual);
 
-        tree = scriptExpander.parse(STATIC_WITH_BRACKET);
+        tree = scriptExpander.parse(STATIC_WITH_DOLAR);
         actual = scriptExpander.render(context);
-        assertEquals(STATIC_WITH_BRACKET, actual);
+        assertEquals(STATIC_WITH_DOLAR, actual);
 
-        tree = scriptExpander.parse(STATIC_WITH_EXPRESSION);
-        context.put( "bracket", 10);
+        tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE);
         actual = scriptExpander.render(context);
-        assertEquals(STATIC_WITH_EXPRESSION_RESULT, actual);
+        assertEquals(STATIC_WITH_DOLAR_BRACE, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_DOLAR_SPACE_BRACE_STAR);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_DOLAR_SPACE_BRACE_STAR, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE_SPACE_STAR);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_DOLAR_BRACE_SPACE_STAR, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_SPACE);
+        context.put( "value", 10);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_EXPRESSION_SPACE_RESULT, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_NO_SPACE);
+        context.put( "value", 10);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_EXPRESSION_NO_SPACE_RESULT, actual);
     }
 
     @Test
     public void testGoodConstants() {
 
-        ParseTree tree = scriptExpander.parse("${n3.21}");
+        ParseTree tree = scriptExpander.parse("${*3.21}");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(3.21D, number);
 
-        tree = scriptExpander.parse("${n321}");
+        tree = scriptExpander.parse("${*321}");
         number = renderer.visit(tree);
         assertEquals(321L, number);
     }
@@ -80,7 +102,7 @@ public class NumberRendererTest {
 
         ParseTree tree;
         try {
-            tree = scriptExpander.parse("${n3x.21}");
+            tree = scriptExpander.parse("${*3x.21}");
             assertTrue(false);
         } catch (Exception x) {
             assert (x.getMessage().contains("mismatched input 'x'"));
@@ -90,28 +112,28 @@ public class NumberRendererTest {
     @Test
     public void testGoodIdentifiers() {
         context.put("foo.bar", 1.23);
-        ParseTree tree = scriptExpander.parse("${nfoo.bar}");
+        ParseTree tree = scriptExpander.parse("${*foo.bar}");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(1.23D, number);
 
         context.put("foobar", 123);
-        tree = scriptExpander.parse("${nfoobar}");
+        tree = scriptExpander.parse("${*foobar}");
         number = renderer.visit(tree);
         assertEquals(123, number);
 
         context.put("foo_bar", 4.56);
-        tree = scriptExpander.parse("${nfoo_bar}");
+        tree = scriptExpander.parse("${*foo_bar}");
         number = renderer.visit(tree);
         assertEquals(4.56, number);
 
         context.put("_foo._bar", 789);
-        tree = scriptExpander.parse("${n_foo._bar}");
+        tree = scriptExpander.parse("${*_foo._bar}");
         number = renderer.visit(tree);
         assertEquals(789, number);
 
         context.put("_3foo._2bar", 7.89);
-        tree = scriptExpander.parse("${n_3foo._2bar}");
+        tree = scriptExpander.parse("${*_3foo._2bar}");
         number = renderer.visit(tree);
         assertEquals(7.89, number);
     }
@@ -121,25 +143,25 @@ public class NumberRendererTest {
 
         ParseTree tree;
         try {
-            tree = scriptExpander.parse("${n.foo.bar}");
+            tree = scriptExpander.parse("${*.foo.bar}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("'.foo'"));
         }
         try {
-            tree = scriptExpander.parse("${n2foo}");
+            tree = scriptExpander.parse("${*2foo}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("'foo'"));
         }
         try {
-            tree = scriptExpander.parse("${n#foo.bar}");
+            tree = scriptExpander.parse("${*#foo.bar}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("'#'"));
         }
         try {
-            tree = scriptExpander.parse("${n$foo.bar}");
+            tree = scriptExpander.parse("${*$foo.bar}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("'$'"));
@@ -148,18 +170,18 @@ public class NumberRendererTest {
 
     @Test
     public void testBraces() {
-        ParseTree tree = scriptExpander.parse("${n(33)}");
+        ParseTree tree = scriptExpander.parse("${*(33)}");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(33L, number);
         try {
-            tree = scriptExpander.parse("${n((44)}");
+            tree = scriptExpander.parse("${*((44)}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("')'"));
         }
         try {
-            tree = scriptExpander.parse("${n((44)))}");
+            tree = scriptExpander.parse("${*((44)))}");
             assertTrue(false);
         } catch (ParseCancellationException x) {
             assert (x.getMessage().contains("')'"));
@@ -168,80 +190,80 @@ public class NumberRendererTest {
 
     @Test
     public void testMultiply() {
-        ParseTree tree = scriptExpander.parse("${n(2*3)}");
+        ParseTree tree = scriptExpander.parse("${*(2*3)}");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(6L, number);
 
-        tree = scriptExpander.parse("${n(2.34*3)}");
+        tree = scriptExpander.parse("${*(2.34*3)}");
         number = renderer.visit(tree);
         assertEquals(7.02D, number);
 
-        tree = scriptExpander.parse("${n(2*3.01)}");
+        tree = scriptExpander.parse("${*(2*3.01)}");
         number = renderer.visit(tree);
         assertEquals(6.02D, number);
 
-        tree = scriptExpander.parse("${n ( 2.34 * 3.02 ) }");
+        tree = scriptExpander.parse("${* ( 2.34 * 3.02 ) }");
         number = renderer.visit(tree);
         assertEquals(7.0668D, number);
     }
 
     @Test
     public void testDivision() {
-        ParseTree tree = scriptExpander.parse("${n  (  6  /  3  )  }");
+        ParseTree tree = scriptExpander.parse("${*  (  6  /  3  )  }");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(2L, number);
 
-        tree = scriptExpander.parse("${n(7.02/3)}");
+        tree = scriptExpander.parse("${*(7.02/3)}");
         number = renderer.visit(tree);
         assertEquals(2.34D, number);
 
-        tree = scriptExpander.parse("${n(12/2.4)}");
+        tree = scriptExpander.parse("${*(12/2.4)}");
         number = renderer.visit(tree);
         assertEquals(5.0D, number);
 
-        tree = scriptExpander.parse("${n ( 7.0668 / 3.02 ) }");
+        tree = scriptExpander.parse("${* ( 7.0668 / 3.02 ) }");
         number = renderer.visit(tree);
         assertEquals(2.34D, number);
     }
 
     @Test
     public void testAdditition() {
-        ParseTree tree = scriptExpander.parse("${n  (  2+  5  )  }");
+        ParseTree tree = scriptExpander.parse("${*  (  2+  5  )  }");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(7L, number);
 
-        tree = scriptExpander.parse("${n(7.02+3 ) }");
+        tree = scriptExpander.parse("${*(7.02+3 ) }");
         number = renderer.visit(tree);
         assertEquals(10.02D, number);
 
-        tree = scriptExpander.parse("${n(12 + 2.4)}");
+        tree = scriptExpander.parse("${*(12 + 2.4)}");
         number = renderer.visit(tree);
         assertEquals(14.4D, number);
 
-        tree = scriptExpander.parse("${n ( 7.0668 + 3.02 ) }");
+        tree = scriptExpander.parse("${* ( 7.0668 + 3.02 ) }");
         number = renderer.visit(tree);
         assertEquals(10.0868D, number);
     }
 
     @Test
     public void testSubtraction() {
-        ParseTree tree = scriptExpander.parse("${n  (  2 -  5  )  }");
+        ParseTree tree = scriptExpander.parse("${*  (  2 -  5  )  }");
         NumberRenderer renderer = new NumberRenderer(context);
         Number number = renderer.visit(tree);
         assertEquals(-3L, number);
 
-        tree = scriptExpander.parse("${n(7.02 - 3 ) }");
+        tree = scriptExpander.parse("${*(7.02 - 3 ) }");
         number = renderer.visit(tree);
         assertEquals(4.02D, number);
 
-        tree = scriptExpander.parse("${n ( 1 - 3.36)}");
+        tree = scriptExpander.parse("${* ( 1 - 3.36)}");
         number = renderer.visit(tree);
         assertEquals(-2.36D, number);
 
-        tree = scriptExpander.parse("${n ( 7.03 - 2.03 ) }");
+        tree = scriptExpander.parse("${* ( 7.03 - 2.03 ) }");
         number = renderer.visit(tree);
         assertEquals(5.0D, number);
     }

@@ -1,8 +1,11 @@
 lexer grammar NumberLexer ;
 
-// Default mode: everything outside of embedded calculations
-STATICTEXT         : ~'['+ ;
-NUMBERCALCOPEN     : '[[' -> pushMode(NUMBERCALC) ;
+// Parsing starts when we see this sequence of characters
+NUMBERCALCOPEN     : '${*' -> pushMode(NUMBERCALC) ;
+
+// Anything text that starts not with '$' or starts with '$' but not followed by
+// curly '{' or starts with '${' but not followed by '*' is static text 
+STATICTEXT         : ~'$'+ | ('$'~'{')+ | ('$' '{' ~'*')+;
 
 // Everything inside of number calculation markers
 mode NUMBERCALC  ;
@@ -10,7 +13,7 @@ mode NUMBERCALC  ;
 fragment DIGIT     : [0-9] ;
 fragment ALFA      : [A-Za-z] ;
 
-NUMBERCALCCLOSE    : ']'  -> popMode ;
+NUMBERCALCCLOSE    : '}'  -> popMode ;
 MULT               : '*' ;
 DIV                : '/' ;
 PLUS               : '+' ;
