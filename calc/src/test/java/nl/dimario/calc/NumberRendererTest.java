@@ -41,6 +41,27 @@ public class NumberRendererTest {
         context = new HashMap<>();
     }
 
+    private static final String STATIC_TEXT = "This is just static text";
+    private static final String STATIC_WITH_BRACKET = "This is static text with a [ bracket";
+    private static final String STATIC_WITH_EXPRESSION = "This is static text with an expression [* bracket ]";
+    private static final String STATIC_WITH_EXPRESSION_RESULT = "This is static text with an expression 10";
+
+    @Test
+    public void testIslandGrammar() {
+        ParseTree tree = scriptExpander.parse(STATIC_TEXT);
+        String actual = scriptExpander.render(context);
+        assertEquals( STATIC_TEXT, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_BRACKET);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_BRACKET, actual);
+
+        tree = scriptExpander.parse(STATIC_WITH_EXPRESSION);
+        context.put( "bracket", 10);
+        actual = scriptExpander.render(context);
+        assertEquals(STATIC_WITH_EXPRESSION_RESULT, actual);
+    }
+
     @Test
     public void testGoodConstants() {
 

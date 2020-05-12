@@ -1,8 +1,8 @@
 lexer grammar NumberLexer ;
 
 // Default mode: everything outside of embedded calculations
-NUMBERCALCOPEN     : '${n' -> pushMode(NUMBERCALC) ;
-STATICTEXT         : ~'$'+ ;
+STATICTEXT         : ~'['+ ;
+NUMBERCALCOPEN     : '[[' -> pushMode(NUMBERCALC) ;
 
 // Everything inside of number calculation markers
 mode NUMBERCALC  ;
@@ -10,7 +10,7 @@ mode NUMBERCALC  ;
 fragment DIGIT     : [0-9] ;
 fragment ALFA      : [A-Za-z] ;
 
-NUMBERCALCCLOSE    : '}'  -> popMode ;
+NUMBERCALCCLOSE    : ']'  -> popMode ;
 MULT               : '*' ;
 DIV                : '/' ;
 PLUS               : '+' ;
