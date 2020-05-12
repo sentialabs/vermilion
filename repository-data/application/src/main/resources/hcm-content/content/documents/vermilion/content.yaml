@@ -94,18 +94,17 @@
     jcr:mixinTypes: ['hippo:named', 'hippo:versionInfo', 'mix:referenceable']
     jcr:uuid: fa4a85d3-20ff-4c18-ba47-99d01eb49a7b
     hippo:name: Scrripting Example
-    hippo:versionHistory: 30115f5b-df95-4631-a73c-9c6d20b7f847
+    hippo:versionHistory: 7b74933b-e0a7-4f98-9340-8ee36d2202f1
     /scrripting-example[1]:
       jcr:primaryType: vermilion:contentdocument
       jcr:mixinTypes: ['mix:referenceable']
       jcr:uuid: 648d3361-f889-4ec2-ad68-053970c64b4d
       hippo:availability: []
       hippo:related___pathreference: []
-      hippostd:holder: admin
       hippostd:state: draft
       hippostdpubwf:createdBy: admin
       hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
-      hippostdpubwf:lastModificationDate: 2020-05-12T08:34:51.800+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:47.010+02:00
       hippostdpubwf:lastModifiedBy: admin
       hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
       hippotranslation:locale: en
@@ -116,9 +115,9 @@
       /vermilion:content:
         jcr:primaryType: hippostd:html
         hippostd:content: |-
-          <p>Here is a fragment of embedded script: S{n 7 + 3 }. It is not interpreted because there is an 'S' instead of a&nbsp;dollar sign in front of the opening curly brace.</p>
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
 
-          <p>Here is the same fragment, but this time it can be interpreted: ${ 7 + 3 }. As you can see, the addition is performed.</p>
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
     /scrripting-example[2]:
       jcr:primaryType: vermilion:contentdocument
       jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
@@ -128,7 +127,7 @@
       hippostd:state: unpublished
       hippostdpubwf:createdBy: admin
       hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
-      hippostdpubwf:lastModificationDate: 2020-05-12T08:34:00.782+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:56.128+02:00
       hippostdpubwf:lastModifiedBy: admin
       hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
       hippotranslation:locale: en
@@ -139,9 +138,9 @@
       /vermilion:content:
         jcr:primaryType: hippostd:html
         hippostd:content: |-
-          <p>Here is a fragment of embedded script: S{n 7 + 3 }. It is not interpreted because there is an 'S' instead of a&nbsp;dollar sign in front of the opening curly brace.</p>
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
 
-          <p>Here is the same fragment, but this time it can be interpreted: ${ 7 + 3 }. As you can see, the addition is performed.</p>
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
     /scrripting-example[3]:
       jcr:primaryType: vermilion:contentdocument
       jcr:mixinTypes: ['mix:referenceable']
@@ -151,9 +150,9 @@
       hippostd:state: published
       hippostdpubwf:createdBy: admin
       hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
-      hippostdpubwf:lastModificationDate: 2020-05-12T08:34:00.782+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:56.128+02:00
       hippostdpubwf:lastModifiedBy: admin
-      hippostdpubwf:publicationDate: 2020-05-12T08:34:04.397+02:00
+      hippostdpubwf:publicationDate: 2020-05-12T18:46:12.700+02:00
       hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
       hippotranslation:locale: en
       vermilion:introduction: This demonstrates how the content editor can add scripting
@@ -163,6 +162,6 @@
       /vermilion:content:
         jcr:primaryType: hippostd:html
         hippostd:content: |-
-          <p>Here is a fragment of embedded script: S{n 7 + 3 }. It is not interpreted because there is an 'S' instead of a&nbsp;dollar sign in front of the opening curly brace.</p>
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
 
-          <p>Here is the same fragment, but this time it can be interpreted: ${ 7 + 3 }. As you can see, the addition is performed.</p>
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
