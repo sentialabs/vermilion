@@ -1,0 +1,149 @@
+Embedded scripting in Bloomreach content.
+
+Embedding script in content allows users of Bloomreach websites
+to embed expressions which are evaluated when the
+content is served. The expressions can refer to data obtained 
+from any type of source.
+In this way, you can obtain data from all kinds of sources and combine it
+in ways not limited by algorithms fixed and cemented in application code. By embedding
+calculations and other transformations in the content pages themselves
+you can experiment with presentation of such data without a 
+need for rolling out a new release of server code.
+
+In particular, when you have no control over the (external) data source
+such a technique comes in handy when your customers requirements vary 
+by the week. Just let them code the desired changes by themselves.
+It will make both you and your customers happier.
+
+The scripting language in question may have a custom created syntax that
+is tailored to a specific purpose. For instance, you can create a language
+that is intended to manipulate dates and supports functions to find the
+start or end of a quarter given an arbitrary date, or that can add a fixed
+number of days, months or years to a given date.
+Or you create a language that takes numbers from an external source and performs some
+intricate arithmatics while neatly formatting the end result in a highly
+versatile way.
+
+In general you don't want to write whole reams of code with your
+custom language, but only short expressions involving values obtained from
+some data source. These expressions are embedded in otherwise ordinary content,
+which in the case of Bloomreach Rich Text fields is bits of HTML.
+
+Now before delving into the specifics of a custom embedded language, let me
+give an overview of what we need to make this work in the Bloomreach web
+application. We have these elements:
+A rich text field in a document that contains HTML plus embedded expressions.
+A tool for scanning HTML content and evaluating the expressions.
+Data (from any source) that is referred to by name in the expressions.
+An interception that ties all of the above together when the document is rendered.
+
+To start with the interception, for this a ContentRewriter is best suited.
+The examples in the Bloomrech documententation show how you can transform HTML
+syntax to weed out unwanted constructs. In our ContentRewriter, we run the
+HTML through a syntax parser, get data from a source and then combine
+the parsed syntax tree and the external data to evaluate the expressions 
+to a string value which then replaces the original text of the embedded
+expression.
+
+How to obtain external data from a source is beyound the scope of this article.
+However, what you need to do once you have obtained the data is create
+a system for resolving identifiers encountered by the parser to values
+present in your data. In my proof of concept project I assume that the values
+are present in a Map, identified by the string that sits in te expression.
+
+In the same vein I will refer you to Bloomreach for how to implement
+your own ContentRewriter.
+
+And of course adding embedded scripting expressions to your content documents is
+simply a matter of grabbing the thing in an editor and pecking away at your keyboard.
+
+Now, for the custom scripting language and how to use it for evaluation of
+embedded scripting. The first task at hand is to determine
+how to distinguish the ordinary HTML from the embedded expressions that
+follow the syntax of our custom language.
+
+Clearly, we need *markers*. Everyting outside of a matching opening marker / closing marker
+pair is ordinary HTML and should not be changed when processing the content in
+our ContenRewriter. Everything inside of matching markers is evaluated as embedded scripting
+syntax. The markers themselves are of course removed from the content.
+
+The opening marker must be a combination of characters that is on the one hand unique
+enough to not be used as text in ordinary content, and on the other hand not
+too threatening for the poor user who must memorize it.
+For instance, the word OPEN would be a bad choice as you can expect this word
+to crop up regularly in natural language. The combination of characters #%!@&,
+while probably not resulting in false positives, would however offend against
+the 'not too threatening' advice.
+
+In my proof of concept example (see below for link), I settled on '${*' for the 
+opening marker, and '}' for the closing marker. Something involving square
+brackets '[' and ']' would also not be a bad choice, albeit that those are
+used for embedded URL links as well so you might want to double them up or
+combine them with another character not used for denoting URL links.
+
+Once we know how to look for embedded scripting, we can cook up a regular expression
+to run over the input HTML so that it will yield ordinary HTML for the regions 
+outside of the markers, and the text inside the markers for scripting to be
+evaluated. Then we throw the scripting parts into our evaluator engine and 
+stick the output from that into the StringBuilder we use to collect the bits
+and pieces of our regexp match.
+
+However, it turns out there is a way to let the scripting engine do the heavy
+lifting, provided we use Antlr4 to create our script interpreter.
+
+Antlr4 is a tool that creates Java code for interpreting a language,
+using a description of that language as its input.
+By writing down the syntax rules of our custom scripting language in 
+a way that Antlr4 can understand, we can make it *generate* the Java 
+source code for our scripting engine.
+Of course, we will need to fill in the parts where we want the 
+expressions to actually *do* something, but that is pretty straight
+forward stuff once you get the hang of it. For instance, the generated
+code will determine that there is a plus sign between two values, 
+but you must override that event, extract the values, add them
+together, and return the result. The generated code only knows that
+a "plus sign event" occured, but it does not know what such an event means.
+
+The nice thing about Antlr4 is that it can support so called [island grammars]
+where the islands of meaningfull code (our embedded expressions) are surrounded
+by a sea of irrelevant characters (the ordinary HTML).
+
+Of course, another advantage of Antlr4 is that you get intimate
+with the theoretical aspects of how to define the syntax rules for 
+a computer language. 
+Or perhaps this would count as a disadvantage, I'm not sure.
+
+Another tool that more or less does what Antlr4 does is [JavaCC]. I looked
+briefly into it. JavaCC also generates Java code for parsing a custom
+defined language syntax, but in this case the syntax rules are much more
+thightly interwoven with the parts of Java code that you yourself must
+write to make the parser /  interpreter do useful things.
+I found the cleanlyness of Antlr4 more appealing: write a grammar,
+generate Java code, extend from the generated classes to intercept 
+parse events and write your own code for performing that addition.
+That, and the use of island grammar made me decide to go with Antlr4.
+
+If you feel disinclined to embark upon the learning experience that
+antlr4 and JavaCC offer vis a vis defining your own programming language,
+you may consider a third alternative, [jexl] This is a cut and 
+dried library from the Apache Foundation that is built on top of JavaCC
+and provides an interpreter for Java syntax, or at least a very large 
+part thereof.
+This has the distinct appeal that you do not need to invent your own
+syntax. The disadvantage is that the consumers of an embedded scripting
+system using Jexl as its evaluation engine must know how to write
+valid Java code, and that you probably will have to massage the 
+input expression code anyway before it can be fully understood by Jexl.
+
+There is a Maven plugin for antlr4, so you can integrate the generation
+of the parser code in your build. Be advised that antlr4 also needs a 
+runtime library included in your project.
+
+Should you be interested in playing around with a Bloomreach application
+that does in fact have a way of embedding expressions in the content,
+I have created an example project with a very simple arithmatic expression
+language that demonstrates an implementation of the above.
+
+You can find it together with more technical notes at:
+
+xxx
