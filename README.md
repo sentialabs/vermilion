@@ -51,6 +51,11 @@ When the parser parses some input code the result is a *parse tree*. When you su
 Your job as a creator of the language, apart from writing the lexer and grammar for the generating process, is to extend one of the generated Parser types and fill in what should happen for various nodes in the parse three. You extract information from the context provided by the tree walker, and together with the knowledge that you are in a certain node type (because of the callback method you are overriding) you have all you need to implement a meaningful behaviour for this rule such finding values for 'a' and '2' (from the context) and adding these (you are in the 'plus' callback method).
 
 ## Details of the lexer
+You can find the source code for the lexer here:
+```
+  calc/src/main/antlr4/nl/dimario/numbercalc/NumberLexer.g4
+```
+
 Antlr4 defines the various sequences of characters that together make up one token more or less in the same way that regular expressions are written down. A tilde ~ means negation, square brackets denote sets (you can also use ranges), dot, star, question mark and plus mean the same as in a regular expression and so on.
 
 Since in this case we are using an island grammar, the lexer definition contains two differents set of lexical rules for the two different modes. 
@@ -77,6 +82,10 @@ Note that nothing is said about identifiers being case sensitive or not.  This i
 Finally the WS token definition says "if you encounter any space, tab, carriage return or newline character do not pass this token on to the parser".
 
 ## Details of the grammar
+You can find the source code for the grammar here:
+```
+  calc/src/main/antlr4/nl/dimario/numbercalc/NumberParser.g4
+```
 The ```options``` line tells antlr4 that this grammar expects tokens as defined by the lexer named "NumberLexer"
 
 Then the grammar  starts defining syntax rules. 
@@ -93,21 +102,6 @@ The definition for the "expression" rule says that an expression can be one of f
 
 
 ## Generating the lexer, parser and supporting stuff
-The files describing the lexical and grammatical rules of the language are placed at a very specific location the ```calc``` project:
-```
-  calc/src/main
-    |
-    antlr4
-      |
-      nl
-        |
-        dimario
-         |
-         numbercalc
-           NumberLexer.g4
-           NumberParser.g4
-```
-
 The actual generation process is performed by running
 ```
    java -cp /opt/antlr-4.7.2/antlr-4.7.2-complete.jar org.antlr.v4.Tool
@@ -116,17 +110,16 @@ first on the lexer definition. This will create amongst other things a *.tokens 
 
 However, generating the Java code for the parser by hand is not very relevant unless you want to study what happens when you tweak the definitions. Instead, we use the ```antlr4-maven-plugin``` and run the generation as part of the build. For details, see the pom.xml of the calc project. It  is set up to generate base classes for both the visitor and the listener manifestation of the parser. In the project only the visitor is used.
 
-Because of the specific location where the *.g4 files are located,  the generated Java code will be placed in a package named ```nl.dimario.numbercalc``` The classnames used are derived from the names given on the first lines of both files.
-When the build process generates the source files it places them under ```target\generated-sources\antlr4\``` . And because this is a default configuration for Maven, it includes this source directory automatically when executing the compile fase of the build.
+Because of the very specific location where the *.g4 files are located,  the generated Java code will be placed in a package named ```nl.dimario.numbercalc``` The classnames used are derived from the names given on the first lines of both files. When the build process generates the source files it places them under ```target\generated-sources\antlr4\``` . This is a default configuration for Maven, so it includes this source directory automatically when executing the compile fase of the build.
 
-As a beside, when you first check out the project and import it into your IDE, you'll get a lot of Java syntax errors because the base classes that other code extends are not yet present. The errors should disappear once you have run a Maven build. This creates the missing base classes and your IDE is probably smart enough to figure out that it should look in the target/generated-sources directory for additional source code. If not, you must tweak your IDE project settings to include the generated sources.
+As a beside, when you first check out the project and import it into your IDE, you'll get a lot of Java syntax errors because the base classes that other code extends are not yet present. The errors should disappear once you have run a Maven build. The build creates the missing base classes and your IDE is probably smart enough to figure out that it should look in the target/generated-sources directory for additional source code. If not, you must tweak your IDE project settings to include the generated sources.
 
 ## Implementing behaviour for the language rules.
 For this part of the technical explanation, please direct your attention to 
 ```
-  calc/src/main/java/nl/dimario/numbercalc/
+  calc/src/main/java/nl/dimario/numbercalc/NumberRenderer.java
 ```
-This is where the interesting stuff happens. At the center of it all is ```NumberRenderer``` . It has a ```render()``` method that takes a parsed tree as it input and then dives into the ```visit``` method of the generated superclass. The visit method starts walking the parse three and calling relevant methods when it encounters the various types of grammatical syntax structures that have been transformed into a parse tree. 
+This is where the interesting stuff happens. NumberRenderer has a ```render()``` method that takes a parsed tree as its input and then dives into the ```visit``` method of the generated base class. The visit method starts walking the parse three and calling relevant methods when it encounters the various types of grammatical syntax structures that have been transformed into a parse tree. 
 
 For instance, when it encounters a node that represents a ```statictext``` grammatical rule, it will call the ```visitStatictext()``` method and pass along a context object holding information about the particulars of this statictext occurence.
 
@@ -136,17 +129,34 @@ To ensure that parsing the token tree continues we then let the base class take 
 
 When the walk along the parse tree sees a node for a "constant" syntax rule, it calls ```visitConstant()``` again with a context object that has information about this particular constant. In this case, we cannot simply add the constant to the output buffer because the constant is part of an expression and the value that it has must be used in the evaluation of the expression. So we get the string that was interpreted as a CONSTANT token, transform it to a data type that is usable in calculations and return the value. In this case, we don't call the base class to further deal with the CONSTANT, because we have already done all that was necessary.
 
-Similar, when an ```identifier``` occurs in the tree, our override method extracts the string that is the identifier from the context and then uses it to look up a value in a Map. Where does this Map come from and how does it get its values? I will explain this later.
+Similar, when an ```identifier``` occurs in the tree, our override method extracts the string that is the identifier from the context and then uses it to look up a value in a Map. Where does this Map come from and how does it get its values? I will explain this later on.
 
 When the treewalk sees an expression of the form BRACEOPEN whatever BRACECLOSE it calls the ```visitBraces()``` method, as we instructed it to do in the grammar definition. Here, we know that whatever the braces surround must be an ```expression``` so we extract it from the context and let recursion deal with it.
 
-The rules for multiplying or dividing call the ```visitMultdiv()``` method, and the rules for addition and subtraction call the ```visitAddsub()``` method. Here we must do some gymnastics because the values that we perform the basic operations on can be either integer or floating point. In order not to muddle the issue I have removed the gory details dealing with implicit conversions to a util class. The parser method merely extracts the values that the operation is performed on together with the information whether we need to multiply or divide in Multdiv() or whether me must add or subtract in Addsub().
+The rule for multiplying or dividing calls the ```visitMultdiv()``` method, and the rule for addition and subtraction calls the ```visitAddsub()``` method. Here we must do some gymnastics because the values that we perform the basic operations on can be either integer or floating point. In order not to muddle the issue I have removed the gory details dealing with implicit conversions to a util class. The parser method merely extracts the values that the operation is performed on together with the information whether we need to multiply or divide in Multdiv() or whether me must add or subtract in Addsub().
 
 I left the highest level syntax rule for the last: the result. The result rule is detected for the whole sequence of tokens that we encounter between a NUMBERCALCOPEN and a NUMBERCALCCLOSE token. This sequence of tokens is assumed to be an expression and thus after invoking the rule for 'expression' we are left with a value, which is the result of all arithmatic that went on in the expression.
 
 What to do with this value? Actually, the whole purpose of this excercise was to replace an expression in the input with its calculated value in the output so this is exactly what we do: the numerical value is converted to String and appended to the output buffer. In the process, the two marker tokens are discarded and thus do not show up in the output.
 
-Nog uitleggen:
-Map met variabelen
-Hoe omgaan met fouten
+## Adding data from an external source to the mix
+You were left wondering how to obtain the values that we must fill in whenever we encounter the name of a variable, a.k.a. identifier. The mechanism in itself is pretty straight forward: we assume that we have a ```Map<String,Number>``` that we use to lookup a value for any variable name we encounter. This does not explain how the values get in the map, nor how we know what the various names stand for. 
+
+You probably won't like the answer, but the long and short of it is: it depends.
+
+The most obvious place to get data from would be an external service. The service could be a REST like server, or perhaps an interface to a database. Or, god forbid but shit happens, some unfortunate creature that reads Excel spreadsheets. Or all of the above.
+
+The general idea here is that you *somehow* obtain data from whatever source is relevant for your project, and then pass it on to the NumberRenderer in the form of a Map filled with Numbers. Obviously whoever is responsible for adding embedded expressions to the content must know what kind of data may appear in the Map as a result of the various extraneous shenanigans, and more precisely he or she should know what names to use for the variables (and what the values for these names represent).
+
+There is a little bit of practical support I can offer: when the data is returned by the service as a JSON object, you could walk this object recursively and place any attribute value in the Map, perhaps using a path-like approach where you concatenate the names of the parent object to the child attribute with a dot in between. 
+
+Of course you would be left with figuring out what to do with arrays (hint: allow variable names to have square brackets with numbers inside them, and add all elements of the array separately with an approriate counter in their name) and what to do with values that are not numbers (hint: ignore these for the time being).
+
+Another approach which is useful when you have to query a service specifically for some value or other by name: before rendering, scan the input and collect the names of all variables used. Then submit this list of names to your external service and digest the result into the aforementioned Map for the renderer. In fact I have added ```NumberVariableScanner.java``` to the package as an illustration of how to do this.
+
+## Dealing with syntax errors
+Ook uitleggenL scriptexpander
+
+
+## How to use the parser in a real live Bloomreach web application
 Hoe frot ik dit in Bloomreach
