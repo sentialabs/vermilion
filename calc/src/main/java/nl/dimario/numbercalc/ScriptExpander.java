@@ -21,7 +21,7 @@ public class ScriptExpander {
     private Set<String> variableNames;
 
     /**
-     * parse the source script into a tree of expression elements,
+     * parse the source script into a tree of expression nodes,
      * then fill up the set with variable names found in the embedded
      * scripting.
      *
