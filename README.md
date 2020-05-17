@@ -145,17 +145,33 @@ You probably won't like the answer, but the long and short of it is: it depends.
 
 The most obvious place to get data from would be an external service. The service could be a REST like server, or perhaps an interface to a database. Or, god forbid but shit happens, some unfortunate creature that reads Excel spreadsheets for a living. Or all of the above.
 
-The general idea here is that you *somehow* obtain data from whatever source is relevant for your project, and then pass it on to the NumberRenderer in the form of a Map filled with Numbers. Obviously whoever is responsible for adding embedded expressions to the content must know what kind of data may appear in the Map as a result of the various extraneous shenanigans, and more precisely he or she should know what names to use for the variables (and what the values for these names mean).
+The general idea here is that you *somehow* obtain data from whatever source is relevant for your project, and then pass it on to the NumberRenderer in the form of a Map filled with Numbers. Obviously whoever is responsible for adding embedded expressions to the content must know what kind of data may appear in the Map as a result of the various extraneous shenanigans, and more precisely he or she should know what names to use for the variables (and what the values for these names mean.
 
-There is a little bit of practical support I can offer: when the data is returned by the service as a JSON object, you could walk this object recursively and place any attribute value in the Map, perhaps using a path-like approach where you concatenate the names of the parent object to the child attribute with a dot in between. This is what happens in JsonDataSource which I included as an example.
+There is a little bit of practical support I can offer: when the data is returned by the service as a JSON object, you could walk this object recursively and place any attribute value in the Map, perhaps using a path-like approach where you concatenate the names of the parent object to the child attribute with a dot in between. This is what happens in ```JsonDataSource``` which I included as an example.
 
-Of course you would be left with figuring out what to do with arrays (hint: allow variable names to have square brackets with numbers inside them, and add all elements of the array separately with an approriate counter in their name) and what to do with values that are not numbers (hint: ignore these for the time being).
+Of course you would be left with figuring out what to do with arrays (hint: allow variable names to have square brackets with numbers inside them, and add all elements of the array separately with an approriate counter in their name) and what to do with values that are not numbers (hint: ignore these for the time being.
 
 Another approach which is useful when you have to query a service specifically for some value or other by name: before rendering, scan the input and collect the names of all variables used. Then submit this list of names to your external service and digest the result into the aforementioned Map for the renderer. In fact I have added ```NumberVariableScanner.java``` to the package as an illustration of how to do this.
 
-## Dealing with syntax errors
-Ook uitleggenL scriptexpander
+## Dealing with errors
+What happens when an expression entered by a content creator does not comply with the syntax rules that you have concocted for your scrirpting language? By default, not much. The antlr tool just sort of tries to make the best of it and the result is that we may or may not see some output for the bad expression.
 
+Clearly, we want to be alerted when something bad happens. 
+
+For this purpose I have added a ```CustomErrorListener``` to both the lexer and the parser. This error listener transforms parse errors to a special class of exception, the ```ParseCancellationException``` which causes the runtime library and / or the generated code to NOT try and soldier on in case of errors but instead throw the exception upwards so that it reaches our own code that is trying to get the expression rendered.
+
+How you want to deal with exceptions from the parser once they reach code inside your Blooomreach web application is entirely up to you. The goal of the CustomErrorListener is to make sure such exceptions reach your code.
 
 ## How to use the parser in a real live Bloomreach web application
-Hoe frot ik dit in Bloomreach
+The parsing, obtaining data from an external source and rendering output is all conveniently packaged in a high level class, the ```ScriptExpander```. This class also adds the custom error listeners for you.
+
+So your Bloomreach web application needs to create a ScriptExpander, pass the rich text containing embedded script to it, and then receive the rendered output.
+
+The best place for doing this would be inside of a ContentRewriter.
+
+I have created a ```ScriptContentRewriter``` that extends the default SimpleContentRewriter to demonstrate the use of scripting.
+All it takes is three lines of code to get the ScriptExpander to do its thing.
+
+Input is html, the content of the document to be evaluated. This is parsed and rendered and that's it.
+
+In order to get the Bloomreach web application to actually use __your__ version of the ContentRewriter you have to configure it in ```/site/webapp/src/main/webapp/WEB-INF/hst-config.properties``` as per instructions in the Bloomreach documentation.

@@ -50,6 +50,10 @@ public class ScriptExpander {
      * of variables that are used in the  embedded script. The names of the
      * values must be resolved to Number values. This is the responsibility
      * of the caller that wants the scripting to be evaluated.
+     * 
+     * Note that in the current state of things, the set of scanned
+     * variables is never used. Instead the external data is
+     * obtained via a JsonDataSourrce.
      */
     private void scanVariables() {
         NumberVariableScanner scanner  = new NumberVariableScanner();
@@ -63,18 +67,22 @@ public class ScriptExpander {
     }
 
     /**
-     * render() takes a Map that holds the names of all variables used in the
-     * script together with a Number value for that identifier. This map
-     * is used by the rendering code to resolve names to values.
-     *
-     * @param variables a Map containing all identifiers found by scanVariables()
-     *                  together with their value. It is the responseblity of the
-     *                  caller to find values for the names, here we just use them.
+     * render() uses a JsonDataSource to get some variables from an
+     * external source (in this case a file on the local file system).
+     * It then tries to parse the input and evaluate the embedded expressions.
+     * When errors occur, these are returned instead.
+     * 
      * @return          A string containing unaltered HTML mixed with the rendered
      *                  calculations.
      */
-    public String render( Map<String,Number> variables) {
-        NumberRenderer renderer = new NumberRenderer(variables);
-        return renderer.render(tree);
+    public String render() {
+    	try {
+	    	JsonDataSource jsonDataSource = new JsonDataSource( "src/test/resources/testdata.json");
+	    	Map<String,Number> variables = jsonDataSource.getValues();
+	        NumberRenderer renderer = new NumberRenderer(variables);
+	        return renderer.render(tree);
+    	} catch(Exception x) {
+    		return String.format("*** ERROR ***\n\n%s",x.getMessage());
+    	}
     }
 }

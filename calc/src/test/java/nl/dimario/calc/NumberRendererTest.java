@@ -46,41 +46,41 @@ public class NumberRendererTest {
     private static final String STATIC_WITH_DOLAR_BRACE = "This is static text with a ${ dolar } and curly";
     private static final String STATIC_WITH_DOLAR_SPACE_BRACE_STAR = "This is static text with a $ {* dolar } and curly and some space";
     private static final String STATIC_WITH_DOLAR_BRACE_SPACE_STAR = "This is static text with a ${ * dolar } and curly and some space";
-    private static final String STATIC_WITH_EXPRESSION_SPACE = "This is static text with an expression ${* value }";
+    private static final String STATIC_WITH_EXPRESSION_SPACE = "This is static text with an expression ${* aa }";
     private static final String STATIC_WITH_EXPRESSION_SPACE_RESULT = "This is static text with an expression 10";
-    private static final String STATIC_WITH_EXPRESSION_NO_SPACE = "This is static text with an expression ${*value} and some more";
+    private static final String STATIC_WITH_EXPRESSION_NO_SPACE = "This is static text with an expression ${*aa} and some more";
     private static final String STATIC_WITH_EXPRESSION_NO_SPACE_RESULT = "This is static text with an expression 10 and some more";
 
     @Test
     public void testIslandGrammar() {
         ParseTree tree = scriptExpander.parse(STATIC_TEXT);
-        String actual = scriptExpander.render(context);
+        String actual = scriptExpander.render();
         assertEquals( STATIC_TEXT, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_DOLAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_DOLAR_BRACE, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_SPACE_BRACE_STAR);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_DOLAR_SPACE_BRACE_STAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE_SPACE_STAR);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_DOLAR_BRACE_SPACE_STAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_SPACE);
         context.put( "value", 10);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_EXPRESSION_SPACE_RESULT, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_NO_SPACE);
         context.put( "value", 10);
-        actual = scriptExpander.render(context);
+        actual = scriptExpander.render();
         assertEquals(STATIC_WITH_EXPRESSION_NO_SPACE_RESULT, actual);
     }
 

@@ -20,13 +20,13 @@ public class TestRunMain {
 
         try {
             scriptExpander.parse(script);
-            Set<String> variables = scriptExpander.getVariableNames();
-            Map<String, Number> context = new HashMap<>();
-            int ct = 2;
-            for (String name : variables) {
-                context.put(name, ct++);
-            }
-            String result = scriptExpander.render(context);
+//            Set<String> variables = scriptExpander.getVariableNames();
+//            Map<String, Number> context = new HashMap<>();
+//            int ct = 2;
+//            for (String name : variables) {
+//                context.put(name, ct++);
+//            }
+            String result = scriptExpander.render();
             System.out.println(result);
         } catch (Exception x) {
             x.printStackTrace();
