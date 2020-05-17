@@ -26,7 +26,7 @@ public class TestRunMain {
 //            for (String name : variables) {
 //                context.put(name, ct++);
 //            }
-            String result = scriptExpander.render();
+            String result = scriptExpander.render("src/test/resources/testdata.json");
             System.out.println(result);
         } catch (Exception x) {
             x.printStackTrace();

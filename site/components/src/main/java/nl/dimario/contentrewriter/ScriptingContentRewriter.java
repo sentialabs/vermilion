@@ -13,6 +13,6 @@ public class ScriptingContentRewriter extends SimpleContentRewriter {
     public String rewrite(final String html, Node node, HstRequestContext requestContext) {
         ScriptExpander scriptExpander = new ScriptExpander();
         scriptExpander.parse(html);
-        return scriptExpander.render();
+        return scriptExpander.render("data.json");
     }
 }

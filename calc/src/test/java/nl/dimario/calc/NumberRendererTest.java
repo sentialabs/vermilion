@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class NumberRendererTest {
+	
+	private static final String DATAFILE = "testdata.json";
 
     private Map<String, Number> context;
     private ScriptExpander scriptExpander;
@@ -54,33 +56,33 @@ public class NumberRendererTest {
     @Test
     public void testIslandGrammar() {
         ParseTree tree = scriptExpander.parse(STATIC_TEXT);
-        String actual = scriptExpander.render();
+        String actual = scriptExpander.render(DATAFILE);
         assertEquals( STATIC_TEXT, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_DOLAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_DOLAR_BRACE, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_SPACE_BRACE_STAR);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_DOLAR_SPACE_BRACE_STAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_DOLAR_BRACE_SPACE_STAR);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_DOLAR_BRACE_SPACE_STAR, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_SPACE);
         context.put( "value", 10);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_EXPRESSION_SPACE_RESULT, actual);
 
         tree = scriptExpander.parse(STATIC_WITH_EXPRESSION_NO_SPACE);
         context.put( "value", 10);
-        actual = scriptExpander.render();
+        actual = scriptExpander.render(DATAFILE);
         assertEquals(STATIC_WITH_EXPRESSION_NO_SPACE_RESULT, actual);
     }
 

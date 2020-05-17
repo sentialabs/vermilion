@@ -11,7 +11,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,20 +70,26 @@ public class ScriptExpander {
     public Set<String> getVariableNames() {
         return this.variableNames;
     }
+    
+    private String loadDataFromResource(String resourceName) throws IOException {
+    	File file = new File(getClass().getClassLoader().getResource(resourceName).getFile());
+    	return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+    }
 
     /**
      * render() uses a JsonDataSource to get some variables from an
-     * external source (in this case a file on the local file system).
+     * external source (in this case a file from project resources).
      * It then tries to parse the input and evaluate the embedded expressions.
      * When errors occur, these are returned instead.
      * 
-     * @return          A string containing unaltered HTML mixed with the rendered
+     * @return          A string containing unaltered HTML mixed with the result of the
      *                  calculations.
      */
-    public String render() {
+    public String render(String dataFile) {
     	try {
-	    	JsonDataSource jsonDataSource = new JsonDataSource( "src/test/resources/testdata.json");
-	    	Map<String,Number> variables = jsonDataSource.getValues();
+    		String data = loadDataFromResource(dataFile);
+	    	JsonDataSource jsonDataSource = new JsonDataSource();
+	    	Map<String,Number> variables = jsonDataSource.getValues(data);
 	        NumberRenderer renderer = new NumberRenderer(variables);
 	        return renderer.render(tree);
     	} catch(Exception x) {
