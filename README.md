@@ -22,7 +22,7 @@ Directly in the homepage is a document that uses embedded scripting.
 
 # Some information regarding antlr4
 
-Here are some resourcs regarding antlr4
+Here are some resources regarding antlr4
 
 https://tomassetti.me/antlr-mega-tutorial/
 
@@ -56,7 +56,7 @@ You can find the source code for the lexer here:
   calc/src/main/antlr4/nl/dimario/numbercalc/NumberLexer.g4
 ```
 
-Antlr4 defines the various sequences of characters that together make up one token more or less in the same way that regular expressions are written down. A tilde ~ means negation, square brackets denote sets (you can also use ranges), dot, star, question mark and plus mean the same as in a regular expression and so on.
+Antlr4 defines the various sequences of characters that together make up one token more or less in the same way that regular expressions are written down. A tilde ~ means negation, square brackets denote sets (you can also use ranges), pipeline means 'or', dot, star, question mark and plus mean the same as in a regular expression and so on.
 
 Since in this case we are using an island grammar, the lexer definition contains two differents set of lexical rules for the two different modes. 
 
@@ -66,17 +66,21 @@ The other mode is named NUMBERCALC and it also defines a boundary marker, named 
 
 The lexical structure of the default mode is very uncomplicated: all characters encounterd in that mode ar added to one single token named STATICTEXT. 
 
-The definition of the STATTICTEXT token effectively says "any sequence of characters up to an '${*' marker should be considered STATICTEXT (in other words, not embedded script). 
+The definition of the STATTICTEXT token effectively says "any sequence of characters up to an __${*__ marker should be considered STATICTEXT (in other words, not embedded script). 
 
-The actual definition of the STATICTEXT token is a bit more complicated because we want to allow for a '$' that  is not followed by a '{' and also for a '${' that is not followed by a '\*'. Only when all three characters are encountered consecutively should this count as a marker for the start of an embedded expression.
+The actual definition of the STATICTEXT token is a bit more complicated than you would expect because we want to allow for a __$__ that  is not followed by a __{__ to be interpeted as part of a STATICTEXT  and likewise for a __${__ that is not followed by a __\*__ token. Only when all three characters are encountered consecutively should this count as a marker for the start of an embedded expression.
 
-So the there are two tokens in the default mode: the NUMBERCALCOPEN marker token for the mode switch, and the STATICTEXT token for everything that is not such a marker.
+So there are just two tokens in the default mode: the NUMBERCALCOPEN marker token for the mode switch, and the STATICTEXT token for everything else.
 
-As for lexical analysis in the calculation mode, a bit more is happening there. Any single character that has a meaning in our syntax is given a name which will be used when defining grammar rules. The DIGIT and ALFA fragments are used in the definition of CONSTANT IDENTIFIER. Fragments are in themselves not a whole token but they aid in defining them. The concept of fragments is specific for the antlr4 tool.
+As for lexical analysis in the NUMBERCALC mode, a bit more is happening there. Any single character that has a meaning in our syntax is given a name which will be used when defining grammar rules. The DIGIT and ALFA fragments are used in the definition of CONSTANT IDENTIFIER. Fragments are in themselves not a whole token but they aid in defining them. The concept of fragments is specific for the antlr4 tool.
 
-The lexical rule for CONSTANT says: a constant is a sequence of at least one DIGIT, possibly folllowed by a DOT and another sequence of at least one DIGIT.
+The lexical rule for CONSTANT says: a constant is a sequence of at least one DIGIT, possibly folllowed by a DOT and another sequence of at least one DIGIT. So __2__ is a valid constant and so is __2.0__, but __.9__ is not and neither is __200,000.00__. Nor do we have exponential notation __1.334e-15__, and we also do not use an __0x__ prefix for hexadecimal nor an __L__ suffix for long int. We could if we wanted to but the aim here is to keep things simple. 
+
+Note that constant values can be integers or floating point, as can other values that we use for calculations. So what happens when we mix the two in for instance __0.9 / 2__ ?  This is another decision that the creator of the language will have to make. In our case, I decided to convert everything to floating point before performing the arithmatics unless both operands are integer in which case both are converted to Long.
 
 The rule for IDENTIFIER allows for concatenating names with dots in between, where a name is allowed to begin with a letter or an underscore, but not with a digit. This makes sense because otherwise we would have a hard time knowing if something is a constant or an identifier. Note that nothing is said about identifiers being case sensitive or not.  This is in fact a detail that will be settled when we will be using identifiers to obtain a value.
+
+Thus __person.name__ is a valid identifier, and so is __x3.\_internal__, but not __2.fast.2.furious__. A borderline case is __\_4__ which our lexer rules allow for but in any real language definition should probably be prevented.
 
 Finally the WS token definition has a *skip* directive that says "if you encounter any space, tab, carriage return or newline character do not pass this on to the parser". WS  stands for "whitespace".
 
@@ -93,11 +97,11 @@ At the uppermost level, every sequence of tokens that is presented to the parser
 
 The document rule says that we can expect a sequence of syntax constructions that are either "text" or "calculation". In addition, the sequence is allowed to be totally empty.
 
-A "text" construct is simply a sequence of exactly one STATICTEXT token all by itself. The 'statictext' following the hash sign '#' is not actually a comment but tells antlr4 how we would like the method for this rule to be named in the generated Java code. When implementing what our scripting language should be doing, we will override the generated ```statictext``` method, extract the string that is the actual STATICTEXT, and do something useful with it (such as copying unchanged to the output). 
+A "text" construct is simply a sequence of exactly one STATICTEXT token all by itself. The 'statictext' following the hash sign '#' is not a comment but tells antlr4 how we would like the method for this rule to be named in the generated Java code. When implementing what our scripting language should be doing, we will override the generated ```statictext``` method, extract the string that is the actual STATICTEXT, and do something useful with it (such as copying unchanged to the output). 
 
-A "calculation" thing is an "expression" between an opening and closing token, and we want to name the  coresponding method "result".
+A sequence of tokens that satisfy the "calculation" rule consist of an "expression" between an opening and closing token, and we want to name the  coresponding method "result".
 
-The definition for the "expression" rule says that an expression can be one of five different sequences of tokens. Also notice that some of the definitions refer recursively to "expression". This has to do with the recursive descent aspect of parsing code.  In this way you can parse for instance ```((2+3) * 4)``` by allowing ```2+3``` to be an expression, while ```(2+3)``` is another expression which in turn is part of still another expression of which ```*``` and ```4``` are the other parts.
+The definition for the "expression" rule says that an expression can be one of five different sequences of tokens. Also notice that some of the sequences refer recursively to "expression". This has to do with the recursive descent aspect of parsing code.  In this way you can parse for instance ```((2+3) * 4)``` by allowing ```2+3``` to be an expression, while ```(2+3)``` is another expression which in turn is part of still another expression of which ```*``` and ```4``` are the other parts.
 
 
 ## Generating the lexer, parser and supporting stuff
@@ -105,9 +109,9 @@ The actual generation process is performed by running
 ```
    java -cp /opt/antlr-4.7.2/antlr-4.7.2-complete.jar org.antlr.v4.Tool
 ```
-first on the lexer definition. This will create amongst other things a *.tokens file which is needed when running the same command on the grammar. Note that your mileage may vary with respect to the precise location and version of the antlr jar.
+first on the lexer definition. This will create amongst other things a *.tokens file which is needed when running the same command on the grammar. Note that your mileage may vary with respect to the precise location and version of the antlr4 jar.
 
-However, generating the Java code for the parser by hand is not very relevant unless you want to study what happens when you tweak the definitions. Instead, we use the ```antlr4-maven-plugin``` and run the generation as part of the build. For details, see the pom.xml of the calc project. It  is set up to generate base classes for both the visitor and the listener manifestation of the parser. In the project only the visitor is used.
+However, generating the Java code for the parser by hand is usually not done unless you want to study what happens when you tweak the language definitions. Instead, we use the ```antlr4-maven-plugin``` and run the generation as part of the build. For details, see the pom.xml of the calc project. It  is set up to generate base classes for both the visitor and the listener manifestation of the parser. In the project only the visitor is used, but an example using the listener is also included.
 
 Because of the very specific location where the *.g4 files are located,  the generated Java code will be placed in a package named ```nl.dimario.numbercalc``` The classnames used are derived from the names given on the first lines of both files. When the build process generates the source files it places them under ```target\generated-sources\antlr4\``` . This is a default configuration location for Maven, so it includes this source directory automatically when executing the compile fase of the build.
 
@@ -147,11 +151,9 @@ The most obvious place to get data from would be an external service. The servic
 
 The general idea here is that you *somehow* obtain data from whatever source is relevant for your project, and then pass it on to the NumberRenderer in the form of a Map filled with Numbers. Obviously whoever is responsible for adding embedded expressions to the content must know what kind of data may appear in the Map as a result of the various extraneous shenanigans, and more precisely he or she should know what names to use for the variables (and what the values for these names mean.
 
-There is a little bit of practical support I can offer: when the data is returned by the service as a JSON object, you could walk this object recursively and place any attribute value in the Map, perhaps using a path-like approach where you concatenate the names of the parent object to the child attribute with a dot in between. This is what happens in ```JsonDataSource``` which I included as an example.
+There is a little bit of practical support I can offer: when the data is returned by the service as a JSON object, you could walk this object recursively and place any attribute value in the Map, perhaps using a path-like approach where you concatenate the names of the parent object to the child attribute with a dot in between. This is what happens in ```JsonDataSource``` which I included as an example. Note that the example deals with arrays by encoding the item index in the variable name in a  way that is currently not accounted for by the lexer rules. Again, I want to keep things simple so I provide a suggestion of things could work but then I don't clutter up the beautiful clean and simple language definitions in order to make the suggestion actually work.
 
-Of course you would be left with figuring out what to do with arrays (hint: allow variable names to have square brackets with numbers inside them, and add all elements of the array separately with an approriate counter in their name) and what to do with values that are not numbers (hint: ignore these for the time being.
-
-Another approach which is useful when you have to query a service specifically for some value or other by name: before rendering, scan the input and collect the names of all variables used. Then submit this list of names to your external service and digest the result into the aforementioned Map for the renderer. In fact I have added ```NumberVariableScanner.java``` to the package as an illustration of how to do this.
+Another approach which is useful when you have to query a service specifically for some value or other by name: before rendering, scan the input and collect the names of all variables used. Then submit this list of names to your external service and digest the result into the aforementioned Map for the renderer. In fact I have added ```NumberVariableScanner``` to the package as an illustration of how to do this.
 
 ## Dealing with errors
 What happens when an expression entered by a content creator does not comply with the syntax rules that you have concocted for your scrirpting language? By default, not much. The antlr tool just sort of tries to make the best of it and the result is that we may or may not see some output for the bad expression.
