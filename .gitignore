@@ -1,3 +1,6 @@
 storage/
 essentials/overlays/
 calc/gen/
+repository-data/development/src/main/java/
+repository-data/site-development/src/main/java/
+

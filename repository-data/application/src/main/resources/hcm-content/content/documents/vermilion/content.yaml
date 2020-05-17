@@ -7,22 +7,21 @@
   hippotranslation:locale: en
   /sample-document:
     jcr:primaryType: hippo:handle
-    jcr:mixinTypes: ['hippo:named', 'hippo:versionInfo', 'mix:referenceable']
+    jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
     jcr:uuid: 64ab4648-0c20-40d2-9f18-d7a394f0334b
     hippo:name: Sample document
-    hippo:versionHistory: 3948344d-a73a-427d-9c33-168e9d61b74a
-    /sample-document[1]:
+    /sample-document:
       jcr:primaryType: vermilion:contentdocument
       jcr:mixinTypes: ['mix:referenceable']
       jcr:uuid: 0978fc1f-d4ec-4984-b3f1-24622a3a1efe
-      hippo:availability: [live]
+      hippo:availability: [live, preview]
       hippostd:holder: admin
       hippostd:state: published
       hippostdpubwf:createdBy: admin
       hippostdpubwf:creationDate: 2014-03-25T16:52:00+01:00
-      hippostdpubwf:lastModificationDate: 2020-05-11T14:16:32.848+02:00
+      hippostdpubwf:lastModificationDate: 2014-03-25T16:52:00+01:00
       hippostdpubwf:lastModifiedBy: admin
-      hippostdpubwf:publicationDate: 2020-05-11T14:16:39.559+02:00
+      hippostdpubwf:publicationDate: 2014-03-25T16:52:00+01:00
       hippotranslation:id: 18e6d4ed-604f-4aaa-b74e-80ab97d04c61
       hippotranslation:locale: en
       vermilion:introduction: Lorem Ipsum is simply dummy text of the printing and
@@ -32,65 +31,22 @@
       /vermilion:content:
         jcr:primaryType: hippostd:html
         hippostd:content: |-
-          <p>Contrary to popular belief</p>
+          <html>
+                      <body>
 
-          <p>${n 3 + 2 }</p>
+                      <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has
+                      roots in a piece of classical Latin literature from 45 BC, making it over 2000
+                      years old. Richard McClintock, a Latin professor at Hampden-Sydney College in
+                      Virginia, looked up one of the more obscure Latin words, consectetur, from a
+                      Lorem Ipsum passage, and going through the cites of the word in classical
+                      literature, discovered the undoubtable source. Lorem Ipsum comes from sections
+                      1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and
+                      Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of
+                      ethics, very popular during the Renaissance. The first line of Lorem Ipsum,
+                      "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
 
-          <p>&nbsp;</p>
-
-          <p>, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
-    /sample-document[2]:
-      jcr:primaryType: vermilion:contentdocument
-      jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
-      jcr:uuid: 7da6294f-a596-4f9d-822c-2bc7c652e31f
-      hippo:availability: [preview]
-      hippostd:state: unpublished
-      hippostdpubwf:createdBy: admin
-      hippostdpubwf:creationDate: 2014-03-25T16:52:00+01:00
-      hippostdpubwf:lastModificationDate: 2020-05-11T14:16:32.848+02:00
-      hippostdpubwf:lastModifiedBy: admin
-      hippotranslation:id: 18e6d4ed-604f-4aaa-b74e-80ab97d04c61
-      hippotranslation:locale: en
-      vermilion:introduction: Lorem Ipsum is simply dummy text of the printing and
-        typesetting industry.
-      vermilion:publicationdate: 2014-03-25T16:52:00+01:00
-      vermilion:title: Lorem
-      /vermilion:content:
-        jcr:primaryType: hippostd:html
-        hippostd:content: |-
-          <p>Contrary to popular belief</p>
-
-          <p>${n 3 + 2 }</p>
-
-          <p>&nbsp;</p>
-
-          <p>, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
-    /sample-document[3]:
-      jcr:primaryType: vermilion:contentdocument
-      jcr:mixinTypes: ['mix:referenceable']
-      jcr:uuid: 1fce6714-2371-45ea-be46-b3d0315d08f3
-      hippo:availability: []
-      hippostd:state: draft
-      hippostdpubwf:createdBy: admin
-      hippostdpubwf:creationDate: 2014-03-25T16:52:00+01:00
-      hippostdpubwf:lastModificationDate: 2020-05-11T14:18:18.652+02:00
-      hippostdpubwf:lastModifiedBy: admin
-      hippotranslation:id: 18e6d4ed-604f-4aaa-b74e-80ab97d04c61
-      hippotranslation:locale: en
-      vermilion:introduction: Lorem Ipsum is simply dummy text of the printing and
-        typesetting industry.
-      vermilion:publicationdate: 2014-03-25T16:52:00+01:00
-      vermilion:title: Lorem
-      /vermilion:content:
-        jcr:primaryType: hippostd:html
-        hippostd:content: |-
-          <p>Contrary to popular belief</p>
-
-          <p>${n 3 + 2 }</p>
-
-          <p>&nbsp;</p>
-
-          <p>, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
+                      </body>
+                      </html>
   /another-sample-document:
     jcr:primaryType: hippo:handle
     jcr:mixinTypes: ['hippo:named', 'mix:referenceable']
@@ -133,3 +89,79 @@
 
                       </body>
                       </html>
+  /scrripting-example:
+    jcr:primaryType: hippo:handle
+    jcr:mixinTypes: ['hippo:named', 'hippo:versionInfo', 'mix:referenceable']
+    jcr:uuid: fa4a85d3-20ff-4c18-ba47-99d01eb49a7b
+    hippo:name: Scrripting Example
+    hippo:versionHistory: 7b74933b-e0a7-4f98-9340-8ee36d2202f1
+    /scrripting-example[1]:
+      jcr:primaryType: vermilion:contentdocument
+      jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: 648d3361-f889-4ec2-ad68-053970c64b4d
+      hippo:availability: []
+      hippo:related___pathreference: []
+      hippostd:state: draft
+      hippostdpubwf:createdBy: admin
+      hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:47.010+02:00
+      hippostdpubwf:lastModifiedBy: admin
+      hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
+      hippotranslation:locale: en
+      vermilion:introduction: This demonstrates how the content editor can add scripting
+        to the content
+      vermilion:publicationdate: 0001-01-01T13:00:00+01:00
+      vermilion:title: Scripting Example
+      /vermilion:content:
+        jcr:primaryType: hippostd:html
+        hippostd:content: |-
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
+
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
+    /scrripting-example[2]:
+      jcr:primaryType: vermilion:contentdocument
+      jcr:mixinTypes: ['mix:referenceable', 'mix:versionable']
+      jcr:uuid: 26005424-796d-40ee-a060-dfd4bc8696ef
+      hippo:availability: [preview]
+      hippo:related___pathreference: []
+      hippostd:state: unpublished
+      hippostdpubwf:createdBy: admin
+      hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:56.128+02:00
+      hippostdpubwf:lastModifiedBy: admin
+      hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
+      hippotranslation:locale: en
+      vermilion:introduction: This demonstrates how the content editor can add scripting
+        to the content
+      vermilion:publicationdate: 0001-01-01T13:00:00+01:00
+      vermilion:title: Scripting Example
+      /vermilion:content:
+        jcr:primaryType: hippostd:html
+        hippostd:content: |-
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
+
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
+    /scrripting-example[3]:
+      jcr:primaryType: vermilion:contentdocument
+      jcr:mixinTypes: ['mix:referenceable']
+      jcr:uuid: e8a4ffc3-f383-4f32-af46-96f9cb5952c1
+      hippo:availability: [live]
+      hippo:related___pathreference: []
+      hippostd:state: published
+      hippostdpubwf:createdBy: admin
+      hippostdpubwf:creationDate: 2020-05-10T15:13:19.102+02:00
+      hippostdpubwf:lastModificationDate: 2020-05-12T18:45:56.128+02:00
+      hippostdpubwf:lastModifiedBy: admin
+      hippostdpubwf:publicationDate: 2020-05-12T18:46:12.700+02:00
+      hippotranslation:id: 711c5ac7-ee3b-4cbd-930c-39b17e1bf596
+      hippotranslation:locale: en
+      vermilion:introduction: This demonstrates how the content editor can add scripting
+        to the content
+      vermilion:publicationdate: 0001-01-01T13:00:00+01:00
+      vermilion:title: Scripting Example
+      /vermilion:content:
+        jcr:primaryType: hippostd:html
+        hippostd:content: |-
+          <p>Here is a fragment of embedded script: ${ *&nbsp;7 + 3 }. It is not interpreted because there is a space in front of the asterisk.</p>
+
+          <p>Here is the same fragment, but this time it can be interpreted: ${* 7 + 3 }. As you can see, this time the addition is performed.</p>
