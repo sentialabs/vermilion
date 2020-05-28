@@ -1,11 +1,12 @@
 # Embedding scripting in Bloomreach content
 
-This is a working demonstration project / proof of concept that shows how you can create your own scripting language parser using the Antlr4 tool and implement the evaluation of simple code fragments inside of document content when the webpagee is rendered.
+This is a working demonstration project / proof of concept that shows how you can create your own scripting language parser using the Antlr4 tool and implement the evaluation of simple code fragments inside of document content when the webpage is rendered.
 
 
-So as that you don't have to find out everything for yourself, I will in this readme explain parts of the what, the how and somethimes even the why. In addition I have written a high level overview blog entry that explains things in a more general manner. See here:
+So as that you don't have to find out everything for yourself, I will in this readme explain parts of the what, the how and somethimes even the why. In addition I have written a blog entry that explains things in a more general manner so that you can see how the parts work together. See here:
 
-xxx
+https://www.sentiatechblog.com/embedded-script-in-bloomreach-content
+
 
 ## Running the project
 As usual with Bloomreach projects you can get it up and running with the cargo run:
@@ -23,6 +24,8 @@ Directly in the homepage is a document that uses embedded scripting.
 # Some information regarding antlr4
 
 Here are some resources regarding antlr4
+
+https://www.antlr.org/
 
 https://tomassetti.me/antlr-mega-tutorial/
 
